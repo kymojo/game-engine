@@ -1,0 +1,41 @@
+// See settings.json for ${config:...}
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "SDL2 Build Debug",
+            "command": "${config:MINGW64_PATH}/bin/g++.exe",
+            "args": [
+                // Compile main
+                "-g",
+                "src/main.cpp",
+                // Compile includes
+                "-g",
+                "include/*.cpp",
+                // Output to debug/game
+                "-o",
+                "bin/debug/game.exe",
+                // Additional library paths
+                "-I${config:MINGW64_PATH}/include",
+                "-I${config:MINGW64_PATH}/lib",
+                // Additional libraries (in paths)
+                "-lmingw32",
+                "-lSDL2main",
+                "-lSDL2",
+                "-lSDL2_image",
+                "-mwindows",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc",
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        },
+    ],
+}

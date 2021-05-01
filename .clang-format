@@ -1,0 +1,64 @@
+# General
+IndentWidth: 4
+PointerAlignment: Left
+
+# Blocks
+AllowShortBlocksOnASingleLine: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+# Classes
+AccessModifierOffset: 0
+#// EmptyLineBeforeAccessModifier: Always   # Doesn't work
+#// IndentAccessModifiers: true             # Doesn't work
+
+# Switch / Case
+# AllowShortCaseLabelsOnASingleLine: true
+IndentCaseLabels: true
+
+# Enums
+AllowShortEnumsOnASingleLine: true
+
+# Functions
+AllowShortFunctionsOnASingleLine: Empty
+# AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLambdasOnASingleLine: Empty
+
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+# Loops
+AllowShortLoopsOnASingleLine: false
+
+# Strings
+JavaScriptQuotes: Double
+AlwaysBreakBeforeMultilineStrings: false
+
+# Brackets
+AlignAfterOpenBracket: Align
+
+# Braces
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Always
+  AfterEnum: false
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeWhile: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+# Ternary Operators ( ? : )
+BreakBeforeTernaryOperators: true
+
+# GOTO
+IndentGotoLabels: false
+
+
+...

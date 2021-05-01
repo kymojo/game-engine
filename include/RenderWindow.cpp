@@ -1,0 +1,69 @@
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <iostream>
+
+#include "Entity.hpp"
+#include "RenderWindow.hpp"
+#include "Math.hpp"
+
+using namespace std;
+
+RenderWindow::RenderWindow(const char* p_title, int p_width, int p_height)
+{
+    window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED,
+                              SDL_WINDOWPOS_UNDEFINED, p_width, p_height,
+                              SDL_WINDOW_SHOWN);
+
+    if (window == NULL)
+        cout << "SDL_CreateWindow failed. Error: " << SDL_GetError() << endl;
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+}
+
+SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
+{
+    SDL_Texture* texture = NULL;
+    texture = IMG_LoadTexture(renderer, p_filePath);
+    if (texture == NULL)
+        cout << "IMG_LoadTexture failed. Error: " << SDL_GetError() << endl;
+
+    return texture;
+}
+
+int RenderWindow::getRefreshRate()
+{
+    int displayIndex = SDL_GetWindowDisplayIndex(window);
+    SDL_DisplayMode mode;
+    SDL_GetDisplayMode(displayIndex,0, &mode);
+    return mode.refresh_rate;
+}
+
+void RenderWindow::cleanUp()
+{
+    SDL_DestroyWindow(window);
+}
+
+void RenderWindow::clear()
+{
+    SDL_RenderClear(renderer);
+}
+void RenderWindow::render(Entity& p_entity)
+{
+    SDL_Rect src;
+    src.x = p_entity.getCurrentFrame().x;
+    src.y = p_entity.getCurrentFrame().y;
+    src.w = p_entity.getCurrentFrame().w;
+    src.h = p_entity.getCurrentFrame().h;
+
+    SDL_Rect dest;
+    dest.x = p_entity.getPosition().x;
+    dest.y = p_entity.getPosition().y;
+    dest.w = p_entity.getCurrentFrame().w;
+    dest.h = p_entity.getCurrentFrame().h;
+
+    SDL_RenderCopy(renderer, p_entity.getTexture(), &src, &dest);
+}
+void RenderWindow::display()
+{
+    SDL_RenderPresent(renderer);
+}
