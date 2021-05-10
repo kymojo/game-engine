@@ -9,7 +9,7 @@
             "args": [
                 // Compile main
                 "-g",
-                "src/main.cpp",
+                "main.cpp",
                 // Compile includes
                 "-g",
                 "include/*.cpp",

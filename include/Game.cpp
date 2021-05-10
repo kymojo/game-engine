@@ -1,25 +1,64 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <iostream>
-
 #include "Game.hpp"
 
-using namespace std;
+Game::Game() : isRunning(true) {}
 
-Game::Game() {}
-Game::~Game() {}
-
-void Game::init(const char* p_title, int p_width, int p_height)
+void Game::run()
 {
-    bool successful = true;
-    successful = successful && initializeSDL();
-    successful = successful && initializeImageLoading();
-    successful = successful && initializeWindow(p_title, p_width, p_height);
-    successful = successful && initializeRenderer();
+    if (initialize())
+    {
+        onGameStart();
+        while (isRunning)
+        {
+            checkWindowInput();
+            if (!isRunning)
+                continue;
 
-    isRunning = successful;
+            update();
+            render();
+        }
+        onGameEnd();
+    }
+    cleanUp();
 }
-void Game::handleEvents()
+
+bool Game::initialize()
+{
+    if (SDL_Init(SDL_INIT_VIDEO) > 0)
+        logSdlError("SDL_Init failed.");
+    else if (!IMG_Init(IMG_INIT_PNG))
+        logSdlError("IMG_Init failed.");
+    else
+    {
+        std::string windowName = "Game";
+        int windowWidth = 640, windowHeight = 480;
+        window = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_UNDEFINED,
+                                  SDL_WINDOWPOS_UNDEFINED, windowWidth,
+                                  windowHeight, SDL_WINDOW_SHOWN);
+        if (window == NULL)
+            logSdlError("SDL_CreateWindow failed.");
+        else
+        {
+            renderer = SDL_CreateRenderer(window, -1, 0);
+            if (renderer == NULL)
+                logSdlError("SDL_CreateRenderer failed.");
+            else
+            {
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                return true; // success!
+            }
+        }
+    }
+    return false;
+}
+
+void Game::cleanUp()
+{
+    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
+    SDL_Quit();
+}
+
+void Game::checkWindowInput()
 {
     SDL_Event event;
     while (SDL_PollEvent(&event))
@@ -34,51 +73,30 @@ void Game::handleEvents()
         }
     }
 }
-void Game::update() {}
+
+void Game::update()
+{
+    // TODO update objects
+}
+
 void Game::render()
 {
     SDL_RenderClear(renderer);
-    // Do render here
+    // TODO render objects
     SDL_RenderPresent(renderer);
 }
-void Game::clean()
+
+void Game::log(const std::string& p_message)
 {
-    SDL_DestroyWindow(window);
-    SDL_DestroyRenderer(renderer);
-    SDL_Quit();
+    SDL_Log((p_message + "\n").c_str());
 }
 
-bool Game::initializeSDL()
+void Game::logError(const std::string& p_message)
 {
-    bool success = (SDL_Init(SDL_INIT_VIDEO) == 0);
-    if (!success)
-        cout << "SDL_Init failed. Error: " << SDL_GetError() << endl;
-    return success;
+    SDL_LogError(0, (p_message + "\n").c_str());
 }
-bool Game::initializeImageLoading()
+
+void Game::logSdlError(const std::string& p_message)
 {
-    bool success = IMG_Init(IMG_INIT_PNG);
-    if (!success)
-        cout << "IMG_Init failed. Error: " << SDL_GetError() << endl;
-    return success;
-}
-bool Game::initializeWindow(const char* p_title, int p_width, int p_height)
-{
-    window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED,
-                              SDL_WINDOWPOS_UNDEFINED, p_width, p_height,
-                              SDL_WINDOW_SHOWN);
-    bool success = (window != NULL);
-    if (!success)
-        cout << "SDL_CreateWindow failed. Error: " << SDL_GetError() << endl;
-    return success;
-}
-bool Game::initializeRenderer()
-{
-    renderer = SDL_CreateRenderer(window, -1, 0);
-    bool success = (renderer != NULL);
-    if (!success)
-        cout << "SDL_CreateRenderer failed. Error: " << SDL_GetError() << endl;
-    else
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    return success;
+    logError(p_message + " Error: " + SDL_GetError());
 }

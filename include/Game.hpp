@@ -1,29 +1,29 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <string>
 
 class Game {
     public:
     Game();
-    ~Game();
+    void run();
 
-    void init(const char* p_title, int p_width, int p_height);
-    void handleEvents();
+    protected:
+    bool isRunning;
+    SDL_Renderer* renderer;
+    SDL_Window* window;
+
+    bool initialize();
+    void cleanUp();
+
+    void log(const std::string& p_message);
+    void logError(const std::string& p_message);
+    void logSdlError(const std::string& p_message);
+
+    void checkWindowInput();
     void update();
     void render();
-    void clean();
-    bool running()
-    {
-        return isRunning;
-    }
-
-    private:
-    bool isRunning;
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-
-    bool initializeSDL();
-    bool initializeImageLoading();
-    bool initializeWindow(const char* p_title, int p_width, int p_height);
-    bool initializeRenderer();
+    virtual void onGameStart() {}
+    virtual void onGameEnd() {}
 };
