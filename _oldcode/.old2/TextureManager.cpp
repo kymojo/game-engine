@@ -41,7 +41,7 @@ void TextureManager::unloadTexture(const string& p_textureId)
 
     textures[p_textureId]->unloadTexture();
 }
-void TextureManager::clean()
+void TextureManager::cleanUp()
 {
     unordered_map<string, Texture*>::iterator i;
     for (i = textures.begin(); i != textures.end(); i++)

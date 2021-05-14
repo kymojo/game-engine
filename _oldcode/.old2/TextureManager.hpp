@@ -14,7 +14,7 @@ class TextureManager {
                              const string& p_textureFile, bool p_loadTexture);
     void loadTexture(const string& p_textureId);
     void unloadTexture(const string& p_textureId);
-    void clean();
+    void cleanUp();
 
     private:
     SDL_Renderer* renderer;

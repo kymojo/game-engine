@@ -1,41 +1,48 @@
 #pragma once
 
+#include "GameObject.hpp"
+#include "GameObjectManager.hpp"
+#include "TextureManager.hpp"
+#include "SpriteManager.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <map>
 #include <string>
-// #include "SpriteManager.hpp"
-// #include "TextureManager.hpp"
-// #include "GameObjectManager.hpp"
-// #include "CameraManager.hpp"
 
 class Game {
     public:
-    Game() : isInitialized(false), isRunning(true) {}
+    Game();
+    void run();
+
+    static void log(const std::string& p_message);
+    static void logError(const std::string& p_message);
+    static void logSdlError(const std::string& p_message);
 
     protected:
-    bool isInitialized, isRunning;
-    // SpriteManager sprites;
-    // TextureManager textures;
-    // GameObjectManager objects;
-    // CameraManager cameras;
-
-    SDL_Window* window;
+    bool isRunning;
     SDL_Renderer* renderer;
+    SDL_Window* window;
+    GameObjectManager* objects;
+    TextureManager* textures;
+    SpriteManager* sprites;
+    int fpsCap;
 
-    void initialize();
+    bool initialize();
     void cleanUp();
+
     void checkWindowInput();
     void update();
     void render();
-    virtual void onGameStart();
-    virtual void onGameEnd();
+    void renderObjects();
+    virtual void onGameStart() {}
+    virtual void onGameEnd() {}
+    void startFrameCap(unsigned int* p_frameTime);
+    void endFrameCap(unsigned int* p_frameTime);
 
-    bool initializeSDL();
-    bool initializeImageLoading();
-    bool initializeWindow(const std::string& p_title, int p_width, int p_height);
-    bool initializeRenderer();
-    bool initializeTextureManager();
-    bool initializeSpriteManager();
-    void logErrorLine(const std::string& error);
-    std::string getSdlErrorString();
+    template <class T> T* createObject()
+    {
+        return objects->addObject<T>();
+    }
+
+    void deleteObject(GameObject* p_object);
 };

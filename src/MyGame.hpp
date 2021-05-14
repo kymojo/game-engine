@@ -1,11 +1,11 @@
 #include "../include/Game.hpp"
+#include "MyObject.hpp"
 
 class MyGame : public Game {
     protected:
     void onGameStart()
     {
-        // TODO
-        log("Sup, peeps?");
+        MyObject* obj = createObject<MyObject>();
     }
     void onGameEnd() {
         // TODO

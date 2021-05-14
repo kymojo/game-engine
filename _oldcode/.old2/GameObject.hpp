@@ -1,19 +1,18 @@
 #pragma once
+
 #include "Vector.hpp"
 
 class GameObject {
     public:
-    GameObject();
+    GameObject(unsigned int p_id);
 
-    Vector getPosition();
-    Vector moveTo(Vector p_position);
-    Vector moveRelative(Vector p_position);
-
-    private:
-    Vector position;
-    unsigned int objectId;
-
-    virtual void render();
-    
+    virtual void onCreate();
     virtual void update();
+    virtual void render();
+    virtual void onDelete();
+
+    unsigned int getId();
+    
+    private:
+    unsigned int id;
 };

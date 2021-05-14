@@ -1,106 +1,146 @@
 #include "Game.hpp"
 
-Game::Game()
+Game::Game() : isRunning(true), fpsCap(60) {}
+
+void Game::run()
 {
-    initialize();
-    if (isInitialized)
+    if (initialize())
     {
         onGameStart();
+
+        unsigned int frameTime;
         while (isRunning)
         {
+            startFrameCap(&frameTime);
+
             checkWindowInput();
+            if (!isRunning)
+                continue;
+
             update();
             render();
+
+            endFrameCap(&frameTime);
         }
+        
         onGameEnd();
     }
     cleanUp();
 }
-
-void Game::initialize()
-{
-    bool successful = true;
-    successful = successful && initializeSDL();
-    successful = successful && initializeImageLoading();
-    successful = successful && initializeWindow(p_title, p_width, p_height);
-    successful = successful && initializeRenderer();
-    successful = successful && initializeTextureManager();
-    successful = successful && initializeSpriteManager();
-
-    isInitialized = successful;
+void Game::startFrameCap(unsigned int* p_frameTime) {
+    *p_frameTime = SDL_GetTicks();
+}
+void Game::endFrameCap(unsigned int* p_frameTime) {
+    int minMilisPerFrame = 1000 / fpsCap;
+    int frameTimeLengthInMilis = SDL_GetTicks() - *p_frameTime;
+    if (minMilisPerFrame > frameTimeLengthInMilis)
+        SDL_Delay(minMilisPerFrame - frameTimeLengthInMilis);
 }
 
-bool Game::initializeSDL()
+bool Game::initialize()
 {
-    bool success = (SDL_Init(SDL_INIT_VIDEO) == 0);
-    if (!success)
-    {
-        logErrorLine("SDL_Init failed. Error: " + getSdlErrorString());
-    }
-    return success;
-}
-
-bool Game::initializeImageLoading()
-{
-    bool success = IMG_Init(IMG_INIT_PNG);
-    if (!success)
-        logErrorLine("IMG_Init failed. Error: " + getSdlErrorString());
-    return success;
-}
-
-bool Game::initializeWindow(const string& p_title, int p_width, int p_height)
-{
-    window = SDL_CreateWindow(p_title.c_str(), SDL_WINDOWPOS_UNDEFINED,
-                              SDL_WINDOWPOS_UNDEFINED, p_width, p_height,
-                              SDL_WINDOW_SHOWN);
-    bool success = (window != NULL);
-    if (!success)
-        logErrorLine("SDL_CreateWindow failed. Error: " + getSdlErrorString());
-    return success;
-}
-bool Game::initializeRenderer()
-{
-    renderer = SDL_CreateRenderer(window, -1, 0);
-    bool success = (renderer != NULL);
-    if (!success)
-        logErrorLine("SDL_CreateRenderer failed. Error: " + getSdlErrorString());
+    if (SDL_Init(SDL_INIT_VIDEO) > 0)
+        logSdlError("SDL_Init failed.");
+    else if (!IMG_Init(IMG_INIT_PNG))
+        logSdlError("IMG_Init failed.");
     else
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    return success;
-}
-bool Game::initializeTextureManager()
-{
-    bool success = true;
-    try
     {
-        textures = new TextureManager(renderer);
+        std::string windowName = "Game";
+        int windowWidth = 640, windowHeight = 480;
+        window = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_UNDEFINED,
+                                  SDL_WINDOWPOS_UNDEFINED, windowWidth,
+                                  windowHeight, SDL_WINDOW_SHOWN);
+        if (window == NULL)
+            logSdlError("SDL_CreateWindow failed.");
+        else
+        {
+            renderer = SDL_CreateRenderer(window, -1, 0);
+            if (renderer == NULL)
+                logSdlError("SDL_CreateRenderer failed.");
+            else
+            {
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                
+                textures = new TextureManager(renderer);
+                sprites = new SpriteManager();
+                objects = new GameObjectManager();
+
+                return true; // success!
+            }
+        }
     }
-    catch (const string& error)
-    {
-        success = false;
-        logErrorLine("TextureManager failed to initialize. Error: " + error);
-    }
-    return success;
+    return false;
 }
-bool Game::initializeSpriteManager()
+
+void Game::cleanUp()
 {
-    bool success = true;
-    try
-    {
-        sprites = new SpriteManager();
-    }
-    catch (const string& error)
-    {
-        success = false;
-        logErrorLine("SpriteManager failed to initialize. Error: " + error);
-    }
-    return success;
+    textures->cleanUp();
+    delete textures;
+    sprites->cleanUp();
+    delete sprites;
+    objects->cleanUp();
+    delete objects;
+
+    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
+    SDL_Quit();
 }
-void Game::logErrorLine(const string& error)
+
+void Game::checkWindowInput()
 {
-    SDL_LogError(0,(error + "\n").c_str());
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        switch (event.type)
+        {
+            case SDL_QUIT:
+                isRunning = false;
+                break;
+            default:
+                break;
+        }
+    }
 }
-string Game::getSdlErrorString()
+
+void Game::update()
 {
-    return to_string(*SDL_GetError());
+    // TODO update objects
+}
+
+void Game::renderObjects()
+{
+    for (object_entry objectEntry : *(objects->getObjectsMap()))
+    {
+        GameObject* object = objectEntry.second;
+        object->render();
+    }
+}
+
+void Game::render()
+{
+    SDL_RenderClear(renderer);
+
+    renderObjects();
+
+    SDL_RenderPresent(renderer);
+}
+
+void Game::log(const std::string& p_message)
+{
+    SDL_Log((p_message + "\n").c_str());
+}
+
+void Game::logError(const std::string& p_message)
+{
+    SDL_LogError(0, (p_message + "\n").c_str());
+}
+
+void Game::logSdlError(const std::string& p_message)
+{
+    logError(p_message + " Error: " + SDL_GetError());
+}
+
+void Game::deleteObject(GameObject* p_object)
+{
+    objects->markForDeleteObject(p_object);
 }

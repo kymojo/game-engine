@@ -1,62 +1,41 @@
 #pragma once
 
-#include "SpriteManager.hpp"
-#include "TextureManager.hpp"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <string>
-
-/*
-    Game
-    - texture bank (textures have code names)
-    - sprites bank (sprites have code names)
-    - room
-    - viewport
-
-    Game:
-        Room
-        View
-        Object
-*/
-
-template <typename T> using d_array = std::vector<T>;
-using namespace std;
+// #include "SpriteManager.hpp"
+// #include "TextureManager.hpp"
+// #include "GameObjectManager.hpp"
+// #include "CameraManager.hpp"
 
 class Game {
     public:
-    Game();
-    ~Game();
-
-    void run(const string& p_title, int p_width, int p_height);
-    void init(const string& p_title, int p_width, int p_height);
-    void handleEvents();
-    virtual void update() {}
-    void clean();
-    bool initialized()
-    {
-        return isInitialized;
-    }
-    bool running()
-    {
-        return isRunning;
-    }
-    virtual void onStart() {}
-    virtual void onEnd() {}
+    Game() : isInitialized(false), isRunning(true) {}
 
     protected:
-    bool isInitialized;
-    bool isRunning;
+    bool isInitialized, isRunning;
+    // SpriteManager sprites;
+    // TextureManager textures;
+    // GameObjectManager objects;
+    // CameraManager cameras;
+
     SDL_Window* window;
     SDL_Renderer* renderer;
-    TextureManager* textures;
-    SpriteManager* sprites;
+
+    void initialize();
+    void cleanUp();
+    void checkWindowInput();
+    void update();
+    void render();
+    virtual void onGameStart();
+    virtual void onGameEnd();
 
     bool initializeSDL();
     bool initializeImageLoading();
-    bool initializeWindow(const string& p_title, int p_width, int p_height);
+    bool initializeWindow(const std::string& p_title, int p_width, int p_height);
     bool initializeRenderer();
     bool initializeTextureManager();
     bool initializeSpriteManager();
-    
-    void logErrorLine(const string& error);
-    string getSdlErrorString();
+    void logErrorLine(const std::string& error);
+    std::string getSdlErrorString();
 };

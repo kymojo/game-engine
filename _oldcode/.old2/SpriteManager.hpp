@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Math.hpp"
+#include "Vector.hpp"
 #include "Sprite.hpp"
 #include "Texture.hpp"
 #include <string>
@@ -19,7 +19,7 @@ class SpriteManager {
      * @param p_config [default=NULL] SpriteSheetConfig
      */
     void registerSprite(const string& p_spriteId, Texture* p_texture,
-                        SpriteSheetConfig* config) = NULL;
+                        SpriteSheetConfig* p_config = NULL);
 
     /**
      * @brief Get a Sprite from SpriteManager

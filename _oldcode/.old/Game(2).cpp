@@ -1,23 +1,58 @@
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <iostream>
+#include <string>
+
 #include "Game.hpp"
+#include "SpriteManager.hpp"
+#include "TextureManager.hpp"
+
+using namespace std;
 
 Game::Game()
 {
-    initialize();
+    isInitialized = false;
+    isRunning = true;
+}
+Game::~Game() {}
+
+void Game::run(const string& p_title, int p_width, int p_height)
+{
+    init(p_title, p_width, p_height);
     if (isInitialized)
     {
-        onGameStart();
-        while (isRunning)
-        {
-            checkWindowInput();
-            update();
-            render();
-        }
-        onGameEnd();
-    }
-    cleanUp();
-}
+        const int maxFramesPerSecond = 60;
+        const int minMilisPerFrame = 1000 / maxFramesPerSecond;
+        Uint32 frameStartTimeInMilis;
+        int frameTimeLengthInMilis;
 
-void Game::initialize()
+        try
+        {
+            onStart();
+            while (isRunning)
+            {
+                frameStartTimeInMilis = SDL_GetTicks();
+
+                handleEvents();
+
+                SDL_RenderClear(renderer);
+                update();
+                SDL_RenderPresent(renderer);
+
+                frameTimeLengthInMilis = SDL_GetTicks() - frameStartTimeInMilis;
+                if (minMilisPerFrame > frameTimeLengthInMilis)
+                    SDL_Delay(minMilisPerFrame - frameTimeLengthInMilis);
+            }
+            onEnd();
+        }
+        catch (string& error)
+        {
+            logErrorLine("Game encountered an unexpected error: " + error);
+        }
+    }
+    clean();
+}
+void Game::init(const string& p_title, int p_width, int p_height)
 {
     bool successful = true;
     successful = successful && initializeSDL();
@@ -29,6 +64,29 @@ void Game::initialize()
 
     isInitialized = successful;
 }
+void Game::handleEvents()
+{
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        switch (event.type)
+        {
+            case SDL_QUIT:
+                isRunning = false;
+                break;
+            default:
+                break;
+        }
+    }
+}
+void Game::clean()
+{
+    textures->clean();
+    sprites->clean();
+    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
+    SDL_Quit();
+}
 
 bool Game::initializeSDL()
 {
@@ -39,7 +97,6 @@ bool Game::initializeSDL()
     }
     return success;
 }
-
 bool Game::initializeImageLoading()
 {
     bool success = IMG_Init(IMG_INIT_PNG);
@@ -47,7 +104,6 @@ bool Game::initializeImageLoading()
         logErrorLine("IMG_Init failed. Error: " + getSdlErrorString());
     return success;
 }
-
 bool Game::initializeWindow(const string& p_title, int p_width, int p_height)
 {
     window = SDL_CreateWindow(p_title.c_str(), SDL_WINDOWPOS_UNDEFINED,
