@@ -12,7 +12,13 @@
                 "main.cpp",
                 // Compile includes
                 "-g",
-                "include/*.cpp",
+                // "include/vector/*.cpp",
+                "$(find",
+                "include",
+                "-type",
+                "f",
+                "-iname",
+                "*.cpp)",
                 // Output to debug/game
                 "-o",
                 "bin/debug/game.exe",

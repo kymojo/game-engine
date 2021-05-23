@@ -58,6 +58,13 @@
         "sstream": "cpp",
         "cinttypes": "cpp",
         "unordered_set": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "stack": "cpp",
+        "cerrno": "cpp",
+        "cfloat": "cpp",
+        "climits": "cpp",
+        "set": "cpp",
+        "queue": "cpp",
+        "random": "cpp"
     }
 }
