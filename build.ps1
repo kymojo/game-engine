@@ -2,14 +2,14 @@ function Run {
 
     $mainPath = "./main.cpp"
     $outputPath = "./bin/debug/game.exe"
-    $includePath = "./include"
+    $includePaths = "./include", "./src"
 
     $mingw_path = "C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64"
 
     $libraryPaths = ($mingw_path + "/include"), ($mingw_path + "/lib")
     $libraries = "lmingw32", "lSDL2main", "lSDL2", "lSDL2_image", "mwindows"
 
-    $expressionString = MakeBuildExpression -Main $mainPath -Output $outputPath -Include $includePath -LibraryPaths $libraryPaths -Libraries $libraries
+    $expressionString = MakeBuildExpression -Main $mainPath -Output $outputPath -IncludePaths $includePaths -LibraryPaths $libraryPaths -Libraries $libraries
 
     Write-Host "Building..."
     Write-Host "========================"
@@ -31,7 +31,7 @@ function MakeBuildExpression {
         [Parameter(Mandatory = $true, Position = 1)]
         [string] $Output,
         [Parameter(Mandatory = $false, Position = 2)]
-        [string] $Include,
+        [string[]] $IncludePaths,
         [Parameter(Mandatory = $false, Position = 3)]
         [string[]] $LibraryPaths,
         [Parameter(Mandatory = $false, Position = 4)]
@@ -40,13 +40,16 @@ function MakeBuildExpression {
 
     $compileExpression = "g++", ("""" + $Main + """"), "-o", ("""" + $Output + """")
 
-    $includeFiles = Get-ChildItem -Path $Include -Filter *.cpp -Recurse -Name
-    foreach ($file IN $includeFiles) {
-        $cppFile = $Include + "/" + $file
-        $expressionArgument = "-g", ("""" + $cppFile + """")
-
-        $compileExpression = $compileExpression + $expressionArgument
+    foreach($include IN $IncludePaths)
+    {
+        $includeFiles = Get-ChildItem -Path $include -Filter *.cpp -Recurse -Name
+        foreach ($file IN $includeFiles) {
+            $cppFile = $Include + "/" + $file
+            $expressionArgument = "-g", ("""" + $cppFile + """")
     
+            $compileExpression = $compileExpression + $expressionArgument
+        
+        }
     }
     foreach ($libDir IN $LibraryPaths)
     {

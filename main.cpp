@@ -1,13 +1,14 @@
-// #include <string>
 // #include <iostream>
+// #include <string>
 #include "include/GameEngine/GameEngine.hpp"
+#include "src/Ball.hpp"
 
 using namespace Game;
 
 int main(int argc, char* args[])
 {
     Settings::WINDOW_TITLE = "Super Cool Game";
-    
+
     Game_Init();
 
     /*
@@ -17,6 +18,8 @@ int main(int argc, char* args[])
         Register Sprites
         Load Room
     */
+
+   Entities::add(new Ball());
 
     Game_Launch();
     Game_CleanUp();

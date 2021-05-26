@@ -1,23 +1,24 @@
 #pragma once
 
-// #include "../src/entities/EntityManager.hpp"
-#include <string>
-
 class Entity {
     public:
-    Entity(unsigned int p_id);
-    unsigned int getId();
-    
-    template <class T> void addComponent();
-    template <class T> T removeComponent();
-    template <class T> T getComponent();
-    template <class T> bool hasComponent();
-    template <class T> bool isType();
+    Entity();
+    ~Entity();
 
-    template <class T> void add();
-    template <class T> T remove();
-    template <class T> T get();
-    template <class T> bool has();
+    void setId(unsigned int p_id);
+    unsigned int getId();
+
+    template <class C> void addComponent(C* p_component);
+    template <class C> void removeComponent();
+    template <class C> C* getComponent();
+    template <class C> bool hasComponent();
+    template <class E> bool isType();
+    void destroy();
+
+    template <class C> void add(C* p_component);
+    template <class C> void remove();
+    template <class C> C* get();
+    template <class C> bool has();
     template <class T> bool is();
 
     private:

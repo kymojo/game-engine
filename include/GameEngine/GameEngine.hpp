@@ -56,10 +56,14 @@ namespace Game
 
     namespace Entities
     {
-        template <class T> Entity* create(T* p_entity);
-        void destroy(unsigned int p_entityId);
-        template <class T> Entity** withComponent();
-        template <class T> Entity** ofType();
+        template <class E> void add(E* p_entity);
+        template <class E> void remove(E* p_entity);
+        template <class C, class E> void addComponentTo(C* p_component, E* p_entity);
+        template <class C, class E> void removeComponentFrom(E* p_entity);
+        template <class C> Entity** getAllWithComponent();
+        template <class E> Entity** getAllOfClass();
+        template <class C, class E> C* getComponentOf(E* p_entity);
+        template <class E, class T> bool isEntityOfType(E* p_entity);
     }
 
     namespace Resources
