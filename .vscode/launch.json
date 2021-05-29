@@ -6,7 +6,7 @@
             "name": "Run Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/debug/game.exe",
+            "program": "${workspaceFolder}/build/debug/game.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

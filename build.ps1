@@ -1,7 +1,7 @@
 function Run {
 
     $mainPath = "./main.cpp"
-    $outputPath = "./bin/debug/game.exe"
+    $outputPath = "./build/debug/game.exe"
     $includePaths = "./include", "./src"
 
     $mingw_path = "C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64"
