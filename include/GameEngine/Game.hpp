@@ -95,6 +95,11 @@ namespace Game
         void drawRectangle(const Vector2 &p_position, const Vector2 &p_dimension, bool filled = true);
         void drawTexture(int p_x, int p_y, const Texture &p_texture);
     }
+
+    namespace Mouse
+    {
+        Vector2 getMousePosition();
+    }
 }
 #include "Game.tpp"
 // .hpp files included at top

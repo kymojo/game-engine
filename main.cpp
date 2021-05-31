@@ -21,8 +21,8 @@ int main(int argc, char* args[])
         Load Room
     */
 
-    new Ball(16,16);
-    new Ball(48,48);
+    new Ball(0,0);
+    // new Ball(48,48);
 
     Game_Launch(&GameUpdate);
     Game_CleanUp();
@@ -48,6 +48,7 @@ class BallUpdateSystem {
         int y = p->position.y;
         Render::setColor(255,0,0);
         Render::drawRectangle(x,y,32,32);
+        p->position = Mouse::getMousePosition();
     }
 };
 

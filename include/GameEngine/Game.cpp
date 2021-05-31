@@ -212,3 +212,10 @@ void Render::drawRectangle(const Vector2 &p_position, const Vector2 &p_dimension
 {
     drawRectangle(p_position.x,p_position.y,p_dimension.x,p_dimension.y,filled);
 }
+
+Vector2 Mouse::getMousePosition()
+{
+    int x, y;
+    SDL_GetMouseState(&x,&y);
+    return Vector2(x,y);
+}
